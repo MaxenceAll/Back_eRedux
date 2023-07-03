@@ -1,0 +1,35 @@
+server:
+  port: 1337
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/e-Redux
+    driver-class-name: org.postgresql.Driver
+    username: Admin
+    password: 1337
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+application:
+  security:
+    jwt:
+      secret-key: B3D6FA06E2E7C8C2268F5C06B3B3D67E40E7A7BDEF30A7A3F7F56F97A9930E4E
+      expiration: 86400000 # 1 day
+      refresh-token:
+        expiration: 604800000  # 7 days
+      secret: 3pE7dNfhfEReHtHcKczJx6YKqVw4a3qW
+
+  open-in-view: false
+
+## trace: false

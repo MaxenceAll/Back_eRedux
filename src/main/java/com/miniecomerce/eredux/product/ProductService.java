@@ -41,7 +41,6 @@ public class ProductService {
             existingProduct.setName(product.getName());
             existingProduct.setPrice(product.getPrice());
             existingProduct.setType(product.getType());
-            existingProduct.setImgSrc(product.getImg_src());
             return productRepository.save(existingProduct);
         } else {
             throw new ProductNotFoundException("Product not found with id: " + id);

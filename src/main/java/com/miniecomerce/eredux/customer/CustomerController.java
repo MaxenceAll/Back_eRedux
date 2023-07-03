@@ -1,70 +1,51 @@
 package com.miniecomerce.eredux.customer;
 
-import com.miniecomerce.eredux.customer.exceptions.RegistrationException;
-import com.miniecomerce.eredux.customer.exceptions.InvalidLoginException;
-import com.miniecomerce.eredux.customer.exceptions.AuthenticationException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/customer")
 public class CustomerController {
-    private final CustomerService customerService;
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
+     // TODO: make this ADMIN only
+
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @GetMapping
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest registrationRequest) {
-        try {
-            customerService.registerCustomer(registrationRequest);
-            return ResponseEntity.ok("User registered successfully");
-        } catch (RegistrationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    @GetMapping("/{id}")
+    public Customer getCustomerById(@PathVariable Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + id));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            // Validate login credentials
-            Customer customer = customerService.login(loginRequest.getEmail(), loginRequest.getPassword());
-
-            // Generate JWT token
-            String token = generateJwtToken(customer.getId());
-
-            // Create LoginResponse object
-            LoginResponse response = new LoginResponse(token);
-
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            // Handle authentication exception
-            throw new InvalidLoginException("Invalid email or password");
-        }
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer) {
+        return customerRepository.save(customer);
     }
 
-    private String generateJwtToken(Long customerId) {
-        // Set the expiration time for the token (e.g., 1 hour)
-        long expirationTime = System.currentTimeMillis() + (60 * 60 * 1000);
+    @PutMapping("/{id}")
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customerDetails) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + id));
 
-        // Generate a secret key for signing the token
-        byte[] signingKey = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
+        customer.setEmail(customerDetails.getEmail());
+        customer.setPassword(customerDetails.getPassword());
+        customer.setRole(customerDetails.getRole());
 
-        // Build the JWT token
-        return Jwts.builder()
-                .setSubject(String.valueOf(customerId))
-                .setExpiration(new Date(expirationTime))
-                .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS256)
-                .compact();
+        return customerRepository.save(customer);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteCustomer(@PathVariable Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found with ID: " + id));
+
+        customerRepository.delete(customer);
+    }
 }

@@ -1,4 +1,5 @@
 package com.miniecomerce.eredux.customer;
 
-public class CustomerValidation {
+public enum Role {
+    ADMIN, USER
 }
