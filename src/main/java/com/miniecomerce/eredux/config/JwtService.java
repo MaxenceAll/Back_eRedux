@@ -1,6 +1,7 @@
 package com.miniecomerce.eredux.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -49,37 +50,39 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String jwtToken) {
+
         return extractExpiration(jwtToken).before(new Date());
     }
 
-    public String generateToken(
-            Map<String,Object> extraClaims,
-            UserDetails userDetails
-    ) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        System.out.println("-- Je rentre dans generateToken");
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
+        System.out.println("-- Je rentre dans generateRefreshToken");
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
 
-    private String buildToken(Map<String, Object> extraClaims,
-                              UserDetails userDetails,
-                              long expiration
-    ) {
-        String uniqueFactor = UUID.randomUUID().toString(); // Generate unique factor
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+        System.out.println("-- Je rentre dans buildToken");
+        long currentTimeMillis = System.currentTimeMillis();
+        Date issuedAt = new Date(currentTimeMillis);
+        Date expirationDate = new Date(currentTimeMillis + expiration);
+
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
-                .claim("uniqueFactor", uniqueFactor) // Add unique factor as a claim
+                .setIssuedAt(issuedAt)
+                .setExpiration(expirationDate)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+
     private Claims extractAllClaims(String jwtToken) {
+        System.out.println("-- Je rentre dans extractAllClaims");
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build().parseClaimsJws(jwtToken)
@@ -90,4 +93,14 @@ public class JwtService {
         byte[] secretKeyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(secretKeyBytes);
     }
+
+    public Claims parseToken(String token) throws JwtException {
+        System.out.println("-- Je rentre dans parseToken");
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }
