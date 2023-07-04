@@ -1,6 +1,9 @@
 package com.miniecomerce.eredux.auth;
 
-import com.miniecomerce.eredux.customer.exceptions.RegistrationException;
+import com.miniecomerce.eredux.auth.requests.AuthenticationRequest;
+import com.miniecomerce.eredux.auth.requests.RegisterRequest;
+import com.miniecomerce.eredux.auth.responses.AuthenticationResponse;
+import com.miniecomerce.eredux.auth.responses.RegisterResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +24,33 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request, HttpServletResponse response) {
-        return authenticationService.register(request, response);
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+        // Je rentre dans la route register !
+        System.out.println("-- Je rentre dans la route register !");
+        ResponseEntity<RegisterResponse> registerResponse = authenticationService.register(request, response);
+        // Je sors de la route register !
+        System.out.println("-- Je sors de la route register !");
+        return ResponseEntity.status(HttpStatus.OK).body(registerResponse.getBody());
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationRequest request)
-    {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request, HttpServletResponse response) {
+        // Je rentre dans la route login !
+        System.out.println("-- Je rentre dans la route login !");
+        AuthenticationResponse authenticationResponse = authenticationService.authenticate(request, response);
+        // Je sors de la route login !
+        System.out.println("-- Je sors de la route login !");
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
     }
+
 
     @PostMapping("/refresh")
     public void refreshToken( HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Je rentre dans la route login !
+        System.out.println("-- Je rentre dans la route login !");
         authenticationService.refreshToken(request, response);
-
+        // Je sors de la route login !
+        System.out.println("-- Je sors de la route login !");
     }
 
 }

@@ -1,4 +1,4 @@
-package com.miniecomerce.eredux.auth;
+package com.miniecomerce.eredux.auth.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,13 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationResponse {
+public class RegisterResponse {
 
     @JsonProperty("access_token")
     private String accessToken;
-    @JsonProperty
     private boolean result;
-    @JsonProperty("message")
     private String message;
-
+    private String email;
+    private int error;
 }

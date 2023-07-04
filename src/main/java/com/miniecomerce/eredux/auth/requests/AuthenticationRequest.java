@@ -1,4 +1,5 @@
-package com.miniecomerce.eredux.auth;
+package com.miniecomerce.eredux.auth.requests;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
+public class AuthenticationRequest {
 
-    private String email;
-    private String password;
+        private String email;
+        private String password;
 }
