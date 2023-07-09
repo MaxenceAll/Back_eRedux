@@ -80,7 +80,7 @@ public class AuthenticationService {
 
         // Création du cookie pour le refresh token
         System.out.println("-- Création du cookie pour le refresh token");
-        Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+        Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
         // httpOnly = true pour empêcher le JS d'accéder au cookie
         refreshCookie.setHttpOnly(true);
         // TODO voir si possible de le mettre en secure en dév (httpS)
@@ -135,7 +135,7 @@ public class AuthenticationService {
 
         // Création du cookie pour le refresh token
         System.out.println("-- Création du cookie pour le refresh token");
-        Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+        Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setPath("/");
         // Ajout du cookie à la réponse
@@ -319,12 +319,12 @@ public class AuthenticationService {
         System.out.println("-- Je suis dans la méthode auth");
         // Extraction du token d'authentification
         String token = extractTokenFromRequest(request);
-        System.out.println("-- Token trouvé");
+        System.out.println("-- Token trouvé : " + token);
 
         // Si le token est null, l'utilisateur n'est pas authentifié
         if (token == null) {
             // Access token is not present, so the user is not authenticated
-            System.out.println("-- Access token is not present, so the user is not authenticated");
+            System.out.println("-- refresh token is not present, so the user is not authenticated");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -377,9 +377,11 @@ public class AuthenticationService {
             token = authorizationHeader.substring(7);
             System.out.println("-- token trouvé");
         }
-        System.out.println("-- Je sors de la méthode extractRefreshTokenFromRequest");
+        System.out.println("-- Je sors de la méthode extractRefreshTokenFromRequest avec le token : " + token);
         return token;
     }
+
+
 
 
 }

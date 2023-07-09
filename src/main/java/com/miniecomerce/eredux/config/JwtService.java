@@ -30,7 +30,6 @@ public class JwtService {
     public String extractCustomerEmail(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
     }
-
     private Date extractExpiration(String jwtToken) {
         return extractClaim(jwtToken, Claims::getExpiration);
     }
